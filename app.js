@@ -1,17 +1,20 @@
 const express = require("express");
 const cors = require("cors");
-const bodyParser = require("body-parser");
 
 require("dotenv").config();
 
 const { NotFoundError } = require("./expressErrors");
+const authRoutes = require("./routes/auth");
 const plaidRoutes = require("./routes/plaid");
+
 
 const app = express();
 
 app.use(cors());
-app.use(bodyParser.json());
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
 
+app.use("/auth", authRoutes);
 app.use("/plaid", plaidRoutes);
 
 

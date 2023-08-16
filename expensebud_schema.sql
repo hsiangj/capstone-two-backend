@@ -4,6 +4,7 @@ CREATE TABLE users (
   password TEXT NOT NULL,
   first_name TEXT NOT NULL,
   last_name TEXT NOT NULL,
+  email TEXT NOT NULL,
   created_at TIMESTAMPTZ
 );
 
@@ -28,8 +29,7 @@ CREATE TABLE budgets (
   amount NUMERIC(2),
   created_at TIMESTAMPTZ,
   category_id INTEGER REFERENCES categories ON DELETE SET NULL,
-  user_id INTEGER REFERENCES users ON DELETE CASCADE,
-  expense_id INTEGER REFERENCES expenses ON DELETE SET NULL
+  user_id INTEGER REFERENCES users ON DELETE CASCADE
 );
 
 CREATE TABLE accounts (
