@@ -1,15 +1,16 @@
 const db = require("../db");
 const bcrypt = require("bcrypt");
 const { UnauthorizedError, BadRequestError, NotFoundError } = require("../expressErrors");
-const { partialUpdateSql } = require("../helpers/sql")
+const { partialUpdateSql } = require("../helpers/sql");
 const BCRYPT_WORK_FACTOR = +process.env.BCRYPT_WORK_FACTOR;
 
 class User {
 
   /** Authenticate user with username and password. 
-      Returns {id, username, first_name, last_name, email} 
+      Returns { id, username, first_name, last_name, email } 
       Throws UnauthorizedError if user not found or wrong credentials.
   */
+
   static async authenticate(username, password) {
     // find user
     const result = await db.query(`
@@ -33,9 +34,10 @@ class User {
   }
 
   /** Register user with data. 
-      Returns {id, username, first_name, last_name, email} 
+      Returns { id, username, first_name, last_name, email } 
       Throws BadRequestError on duplicate username.
   */
+
   static async register({ username, password, firstName, lastName, email }) {
     const duplicateCheck = await db.query(`
       SELECT username
@@ -65,6 +67,7 @@ class User {
   /** Find all users.
       Returns [{ id, username, first_name, last_name, email }, ...]
   */
+
   static async findAll() {
     const result = await db.query(`
       SELECT id, username, first_name AS "firstName", last_name AS "lastName", email
@@ -82,6 +85,7 @@ class User {
 
       Throws NotFoundError if user not found.
   */
+
   static async get(id) {
     const userRes = await db.query(`
       SELECT id, username, first_name AS "firstName", last_name AS "lastName", email
@@ -124,6 +128,7 @@ class User {
       Returns {id, username, first_name, last_name, email} 
       Throws NotFoundError if user not found, and UnauthorizedError if incorrect password is entered.
   */
+
   static async update(id, password, data) {
     const isCorrectUser = await db.query(`
       SELECT id, password
@@ -159,6 +164,7 @@ class User {
 
   
   /** Delete given user from database; returns username. */
+  
   static async remove(id) {
     let result = await db.query(`
       DELETE

@@ -6,8 +6,8 @@ require("dotenv").config();
 const { NotFoundError } = require("./expressErrors");
 const authRoutes = require("./routes/auth");
 const usersRoutes = require("./routes/users");
+const expensesRoutes = require("./routes/expenses");
 const plaidRoutes = require("./routes/plaid");
-
 
 const app = express();
 
@@ -17,6 +17,7 @@ app.use(express.urlencoded({extended: true}));
 
 app.use("/auth", authRoutes);
 app.use("/users", usersRoutes);
+app.use("/expenses", expensesRoutes);
 app.use("/plaid", plaidRoutes);
 
 

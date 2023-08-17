@@ -15,10 +15,11 @@ CREATE TABLE categories (
 
 CREATE TABLE expenses (
   id SERIAL PRIMARY KEY,
-  amount NUMERIC(2) NOT NULL,
+  amount NUMERIC(10, 2) NOT NULL,
   date DATE NOT NULL,
-  vendor TEXT,
+  vendor TEXT NOT NULL,
   description TEXT,
+  transaction_id TEXT, 
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   category_id INTEGER REFERENCES categories ON DELETE SET NULL,
   user_id INTEGER REFERENCES users ON DELETE CASCADE
@@ -26,7 +27,7 @@ CREATE TABLE expenses (
 
 CREATE TABLE budgets (
   id SERIAL PRIMARY KEY,
-  amount NUMERIC(2),
+  amount NUMERIC(10, 2),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   category_id INTEGER REFERENCES categories ON DELETE SET NULL,
   user_id INTEGER REFERENCES users ON DELETE CASCADE

@@ -48,7 +48,7 @@ router.patch("/:id", async function (req, res, next) {
   }
 })
 
-/** DELETE /[username]  =>  { deleted: username }
+/** DELETE /users/[id]  =>  { deleted: username }
  * Authorization required: same user as username
  */
 
