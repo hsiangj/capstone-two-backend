@@ -1,6 +1,8 @@
 const db = require("../db");
 const bcrypt = require("bcrypt");
 const { UnauthorizedError, BadRequestError, NotFoundError } = require("../expressErrors");
+const { partialUpdateSql } = require("../helpers/sql")
+const BCRYPT_WORK_FACTOR = +process.env.BCRYPT_WORK_FACTOR;
 
 class User {
 
@@ -44,8 +46,6 @@ class User {
     if (duplicateCheck.rows[0]) {
       throw new BadRequestError(`Duplicate username: ${username}`);
     }
-
-    const BCRYPT_WORK_FACTOR = +process.env.BCRYPT_WORK_FACTOR;
   
     const hashedPassword = await bcrypt.hash(password, BCRYPT_WORK_FACTOR);
 
@@ -77,7 +77,7 @@ class User {
 
   /** Given user id, return data about user.
       Returns { id, username, first_name, last_name, email } 
-      where budgets is { }
+      where budgets is { id, amount, category }
       and expenses is { id, amount. date, vendor, description, category }
 
       Throws NotFoundError if user not found.
@@ -95,7 +95,7 @@ class User {
     if (!user) throw new NotFoundError(`No user id: ${id}`);
 
     const budgetRes = await db.query(`
-      SELECT id, amount, category
+      SELECT b.id, amount, category
       FROM budgets AS b
       JOIN categories as c
       ON b.category_id = c.id 
@@ -105,7 +105,7 @@ class User {
     user.budgets = budgetRes.rows;
 
     const expenseRes = await db.query(`
-      SELECT id, amount, date, vendor, description, category
+      SELECT e.id, amount, date, vendor, description, category
       FROM expenses AS e
       JOIN categories as c
       ON e.category_id = c.id 
@@ -117,10 +117,48 @@ class User {
     return user;
   } 
 
+  /** Update user data.
+      Allows for partial update, data can include:
+       { firstName, lastName, username, email }
+      Requires user password to confirm changes. 
+      Returns {id, username, first_name, last_name, email} 
+      Throws NotFoundError if user not found, and UnauthorizedError if incorrect password is entered.
+  */
+  static async update(id, password, data) {
+    const isCorrectUser = await db.query(`
+      SELECT id, password
+      FROM users
+      WHERE id = $1`,
+      [id]
+    ) 
+    if(!isCorrectUser) throw new NotFoundError(`No user id: ${id}`);
+    
+    const isCorrectPassword = await bcrypt.compare(password, isCorrectUser.rows[0].password)
+    
+    if(!isCorrectPassword) throw new UnauthorizedError('Invalid password');
 
-  //update user
+    const { setCols, values } = partialUpdateSql(
+      data, 
+      {
+      firstName: "first_name",
+      lastName: "last_name"
+      });
+      
+      const idPosition = "$" + (values.length+1);
+
+      const sqlQuery = `
+        UPDATE users 
+        SET ${setCols} 
+        WHERE id = ${idPosition} 
+        RETURNING id, username, first_name AS "firstName", last_name AS "lastName", email`;
+      const result = await db.query(sqlQuery, [...values, id]);
+      const user = result.rows[0];
+
+      return user;
+  }
+
   
-  /** Delete given user from database; returns undefined. */
+  /** Delete given user from database; returns username. */
   static async remove(id) {
     let result = await db.query(`
       DELETE
@@ -131,6 +169,8 @@ class User {
     )
     const user = result.rows[0];
     if (!user) throw new NotFoundError(`No user id: ${id}`);
+
+    return user.username;
    }
 
 }

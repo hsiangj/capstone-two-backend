@@ -5,7 +5,7 @@ CREATE TABLE users (
   first_name TEXT NOT NULL,
   last_name TEXT NOT NULL,
   email TEXT NOT NULL,
-  created_at TIMESTAMPTZ
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 CREATE TABLE categories (
@@ -19,7 +19,7 @@ CREATE TABLE expenses (
   date DATE NOT NULL,
   vendor TEXT,
   description TEXT,
-  created_at TIMESTAMPTZ,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   category_id INTEGER REFERENCES categories ON DELETE SET NULL,
   user_id INTEGER REFERENCES users ON DELETE CASCADE
 );
@@ -27,7 +27,7 @@ CREATE TABLE expenses (
 CREATE TABLE budgets (
   id SERIAL PRIMARY KEY,
   amount NUMERIC(2),
-  created_at TIMESTAMPTZ,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   category_id INTEGER REFERENCES categories ON DELETE SET NULL,
   user_id INTEGER REFERENCES users ON DELETE CASCADE
 );
