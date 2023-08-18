@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$id": "http://example.com/example.json",
+  "type": "object",
+  "required": [
+    "amount"
+  ],
+  "properties": {
+      "amount": {
+        "type": "number",
+        "minimum": 0
+      }
+  }
+}

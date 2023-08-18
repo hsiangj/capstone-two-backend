@@ -99,7 +99,7 @@ class User {
     if (!user) throw new NotFoundError(`No user id: ${id}`);
 
     const budgetRes = await db.query(`
-      SELECT b.id, amount, category
+      SELECT b.id, amount, c.id AS "category_id", category
       FROM budgets AS b
       JOIN categories as c
       ON b.category_id = c.id 
@@ -109,7 +109,7 @@ class User {
     user.budgets = budgetRes.rows;
 
     const expenseRes = await db.query(`
-      SELECT e.id, amount, date, vendor, description, category
+      SELECT e.id, amount, date, vendor, description, c.id AS "category_id", category
       FROM expenses AS e
       JOIN categories as c
       ON e.category_id = c.id 
@@ -164,7 +164,7 @@ class User {
 
   
   /** Delete given user from database; returns username. */
-  
+
   static async remove(id) {
     let result = await db.query(`
       DELETE

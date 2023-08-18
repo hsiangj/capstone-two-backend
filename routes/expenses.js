@@ -10,10 +10,10 @@ const expenseUpdateSchema = require("../schemas/expenseUpdate.json");
 const { BadRequestError } = require("../expressErrors");
 
 /** GET /expenses/[id] => { expense }
- * Returns { id, amount, date, vendor, description, transaction}
+ * Returns { id, amount, date, vendor, description, transaction }
  *   where budgets is { id, amount, category }
       and expenses is { id, amount. date, vendor, description, category }
- * Authorization required: same user as username
+ * Authorization required: same user as logged in user
  */
 
 router.get("/:id", async function (req, res, next) {
@@ -28,7 +28,7 @@ router.get("/:id", async function (req, res, next) {
 
 /** GET /expenses {user_id} => { expense: [{id, amount, date, vendor, description, category_id, transaction_id},...] }
  *
- * Authorization required: same user as username
+ * Authorization required: same user as logged in user
  */
 
 router.get("/", async function (req, res, next) {
@@ -41,13 +41,11 @@ router.get("/", async function (req, res, next) {
   }
 })
 
-
-
 /** POST /expenses { expense } => { expense }
  * Expense should be: { amount, date, vendor, description, category_id, user_id, transaction_id } 
  * Both description and transaction are optional. 
  * Returns { id, amount, date, vendor, description, category_id, user_id, transaction_id } 
- * Authorization required: same user as username
+ * Authorization required: same user as logged in user
  */
 
 router.post("/", async function (req, res, next) {
@@ -68,7 +66,7 @@ router.post("/", async function (req, res, next) {
 /** PATCH /expenses/[id] { expense } => { expense }
  * Data can include: { amount, date, vendor, description, category_id  }
  * Returns { id, amount, date, vendor, description, category_id }
- * Authorization required: same user as username
+ * Authorization required: same user as logged in user
  */
 
 router.patch("/:id", async function (req, res, next) {
@@ -87,9 +85,8 @@ router.patch("/:id", async function (req, res, next) {
   }
 })
 
-
-/** DELETE /users/[id]  =>  { deleted: username }
- * Authorization required: same user as username
+/** DELETE /expenses/[id]  =>  { deleted: id }
+ * Authorization required: same user as logged in user
  */
 
 router.delete("/:id", async function (req, res, next) {

@@ -12,7 +12,7 @@ const { BadRequestError } = require("../expressErrors");
  * Returns { username, firstName, lastName, email, budgets, expenses}
  *   where budgets is { id, amount, category }
       and expenses is { id, amount. date, vendor, description, category }
- * Authorization required: same user as username
+ * Authorization required: same user as logged in user
  */
 
 router.get("/:id", async function (req, res, next) {
@@ -28,7 +28,7 @@ router.get("/:id", async function (req, res, next) {
 /** PATCH /users/[id] { user } => { user }
  * Data can include: { username, firstName, lastName, email }
  * Returns { id, username, firstName, lastName, email }
- * Authorization required: same user as username
+ * Authorization required: same user as logged in user
  */
 
 router.patch("/:id", async function (req, res, next) {
@@ -49,7 +49,7 @@ router.patch("/:id", async function (req, res, next) {
 })
 
 /** DELETE /users/[id]  =>  { deleted: username }
- * Authorization required: same user as username
+ * Authorization required: same user as logged in user
  */
 
 router.delete("/:id", async function (req, res, next) {

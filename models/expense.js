@@ -10,6 +10,7 @@ class Expense {
 
     Throws NotFoundError if expense not found.
 */
+
 static async get(id) {
   const result = await db.query(`
     SELECT id, amount, date, vendor, description, category_id, user_id, transaction_id
@@ -44,7 +45,6 @@ static async findAll({ user_id }) {
 /** Create an expense from data.
     Data should be { amount, date, vendor, description, category_id, user_id, transaction_id } 
     Returns { id, amount, date, vendor, description, category_id, user_id, transaction_id } 
-
 */
 
 static async create({ amount, date, vendor, description=null, category_id, user_id, transaction_id=null }) {
@@ -99,7 +99,7 @@ static async update(id, data) {
   return expense;
 }
 
-/** Delete given transaction from database; returns undefined. */
+/** Delete given expense from database; returns undefined. */
 
 static async remove(id) {
   let result = await db.query(`

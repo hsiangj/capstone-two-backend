@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$id": "http://example.com/example.json",
+  "type": "object",
+  "required": [
+    "amount",
+    "category_id",
+    "user_id"
+  ],
+  "properties": {
+      "amount": {
+        "type": "number",
+        "minimum": 0
+      },
+      "category_id": {
+        "type": "integer"
+      },
+      "user_id": {
+        "type": "integer"
+      }
+  }
+}
