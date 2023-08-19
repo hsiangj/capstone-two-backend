@@ -4,6 +4,8 @@ const express = require("express");
 const router = express.Router();
 const { Configuration, PlaidApi, PlaidEnvironments } = require("plaid");
 
+const Account = require("../models/account");
+
 const configuration = new Configuration({
   basePath: PlaidEnvironments.sandbox,
   baseOptions: {
@@ -42,6 +44,9 @@ router.post('/create_link_token', async function (req, res, next) {
 router.post('/exchange_public_token', async function (req, res, next
 ) {
   const publicToken = req.body.public_token;
+  const { name, institution_id } = req.body.metadata.institution; 
+  const { id: accID, name: accType } = req.body.metadata.account;
+   
   try {
     const plaidResponse = await plaidClient.itemPublicTokenExchange({
       public_token: publicToken,
@@ -50,6 +55,20 @@ router.post('/exchange_public_token', async function (req, res, next
     // associated with the currently signed-in user
     const accessToken = plaidResponse.data.access_token;
     const itemID = plaidResponse.data.item_id;
+
+    const accData = {
+      user_id: 1,
+      access_token: accessToken,
+      item_id: itemID,
+      account_id: accID,
+      institution_id: institution_id,
+      institution_name: name,
+      account_type: accType
+    }
+
+    const account = await Account.create(accData);
+    console.log(account)
+   
     return res.json({ accessToken, public_token_exchange: 'complete' });
   } catch (error) {
     // handle error

@@ -8,6 +8,7 @@ const authRoutes = require("./routes/auth");
 const usersRoutes = require("./routes/users");
 const expensesRoutes = require("./routes/expenses");
 const budgetsRoutes = require("./routes/budgets");
+const accountsRoutes = require("./routes/accounts"); //test
 const plaidRoutes = require("./routes/plaid");
 
 const app = express();
@@ -20,6 +21,7 @@ app.use("/auth", authRoutes);
 app.use("/users", usersRoutes);
 app.use("/expenses", expensesRoutes);
 app.use("/budgets", budgetsRoutes);
+app.use("/accounts", accountsRoutes); //test
 app.use("/plaid", plaidRoutes);
 
 

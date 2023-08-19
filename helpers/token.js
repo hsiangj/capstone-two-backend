@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 
 function createToken(user) {
   let payload = {
+    id: user.id,
     username: user.username,
   }
   const SECRET_KEY = process.env.JWT_SECRET_KEY;
