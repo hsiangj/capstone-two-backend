@@ -3,6 +3,7 @@ const cors = require("cors");
 
 require("dotenv").config();
 
+const { authenticateJWT } = require("./middleware/auth");
 const { NotFoundError } = require("./expressErrors");
 const authRoutes = require("./routes/auth");
 const usersRoutes = require("./routes/users");
@@ -16,6 +17,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
+app.use(authenticateJWT);
 
 app.use("/auth", authRoutes);
 app.use("/users", usersRoutes);
