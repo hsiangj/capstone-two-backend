@@ -1,6 +1,6 @@
 const db = require("../db");
 
-const { BadRequestError } = require("../expressErrors");
+const { BadRequestError, NotFoundError } = require("../expressErrors");
 
 class Account {
 
@@ -24,14 +24,26 @@ static async create({ user_id, access_token, item_id, account_id, institution_id
     INSERT INTO accounts
     (user_id, access_token, item_id, account_id, institution_id, institution_name, account_type)
     VALUES ($1, $2, $3, $4, $5, $6, $7)
-    RETURNING institution_name`,
+    RETURNING id, institution_name`,
     [user_id, access_token, item_id, account_id, institution_id, institution_name, account_type])
     
   const account = result.rows[0];
   return account;
 }
 
+/** Delete given account from database; returns undefined. */
 
+static async remove(id) {
+  let result = await db.query(`
+    DELETE
+    FROM accounts
+    WHERE id = $1
+    RETURNING id`,
+    [id]
+  )
+  const expense = result.rows[0];
+  if (!expense) throw new NotFoundError(`No account id: ${id}`);
+ }
 
 }
 

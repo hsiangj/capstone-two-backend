@@ -5,6 +5,8 @@ const router = express.Router();
 const { Configuration, PlaidApi, PlaidEnvironments } = require("plaid");
 
 const Account = require("../models/account");
+const Expense = require("../models/expense");
+const { mapCategory } = require("../helpers/category");
 
 const configuration = new Configuration({
   basePath: PlaidEnvironments.sandbox,
@@ -67,16 +69,14 @@ router.post('/exchange_public_token', async function (req, res, next
     }
 
     const account = await Account.create(accData);
-    console.log(account)
    
     return res.json({ accessToken, public_token_exchange: 'complete' });
   } catch (error) {
-    // handle error
     return res.status(500).send('Public Token Exchange Failed:', error)
   }
 });
 
-router.post('/transactions/sync', async function (req, res) {
+router.post('/transactions/sync', async function (req, res, next) {
   const access_token = req.body.access_token;
   const request = {
     access_token: access_token,
@@ -86,6 +86,30 @@ router.post('/transactions/sync', async function (req, res) {
   };
   try {
     const transactionResult = await plaidClient.transactionsSync(request);
+    let newTransactions = transactionResult.data.added;
+    
+    if (newTransactions.length > 0) {
+      for (let transaction of newTransactions) {
+        let convertedId = mapCategory(transaction.personal_finance_category.primary);
+        
+        let data = {
+          amount: transaction.amount,
+          date: transaction.date,
+          vendor: transaction.merchant_name,
+          description: transaction.name,
+          category_id: convertedId,
+          user_id: 1,
+          transaction_id: transaction.transaction_id
+        };
+      
+        try {
+          await Expense.create(data);
+        } catch (err) {
+          console.debug('/transactions/sync await expense error at:', data)
+          return next(err);
+        }
+      }
+    }
     return res.json(transactionResult.data);
   } catch (err) {
     return next(err);

@@ -30,7 +30,6 @@ static async get(id) {
 */
 
 static async findAll({ user_id }) {
-  console.log('hello from expnese model', user_id)
   const result = await db.query(`
     SELECT id, amount, date, vendor, description, category_id, transaction_id 
     FROM expenses
@@ -47,7 +46,7 @@ static async findAll({ user_id }) {
     Returns { id, amount, date, vendor, description, category_id, user_id, transaction_id } 
 */
 
-static async create({ amount, date, vendor, description=null, category_id, user_id, transaction_id=null }) {
+static async create({ amount, date, vendor, description=null, category_id=7, user_id, transaction_id=null }) {
   if (transaction_id) {
     const duplicateCheck = await db.query(`
       SELECT transaction_id 
