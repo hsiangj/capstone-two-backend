@@ -23,12 +23,14 @@
       "firstName": {
         "type": "string",
         "minLength": 1,
-        "maxLength": 30
+        "maxLength": 30,
+        "pattern": "^(?!\\s)[A-Za-z]*$"
       },
       "lastName": {
         "type": "string",
         "minLength": 1,
-        "maxLength": 30
+        "maxLength": 30,
+        "pattern": "^(?!\\s)[A-Za-z]*$"
       },
       "email": {
         "type": "string",
