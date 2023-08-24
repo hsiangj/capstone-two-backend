@@ -6,8 +6,7 @@
     "amount",
     "date",
     "vendor",
-    "category_id",
-    "user_id"
+    "category_id"
   ],
   "properties": {
       "amount": {
@@ -23,9 +22,6 @@
         "type": "string"
       },
       "category_id": {
-        "type": "integer"
-      },
-      "user_id": {
         "type": "integer"
       },
       "transaction_id": {

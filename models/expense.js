@@ -5,34 +5,39 @@ const { partialUpdateSql } = require("../helpers/sql");
 
 class Expense {
 
-/** Given expense id, return data about expense.
-    Returns { id, amount, date, vendor, description, category_id, user_id, transaction_id } 
+/** Given expense id, return data about expense for a specific user.
+    Returns { id, amount, date, vendor, description, category_id, category, user_id, transaction_id } 
 
     Throws NotFoundError if expense not found.
 */
 
-static async get(id) {
+static async get(user_id, expense_id) {
   const result = await db.query(`
-    SELECT id, amount, date, vendor, description, category_id, user_id, transaction_id
-    FROM expenses 
-    WHERE id = $1`,
-    [id])
+    SELECT e.id, amount, date, vendor, description, category_id, category, user_id, transaction_id
+    FROM expenses e
+    JOIN categories c
+    ON e.category_id = c.id
+    WHERE e.id = $1
+    AND user_id = $2`,
+    [user_id, expense_id])
 
   const expense = result.rows[0];
 
-  if (!expense) throw new NotFoundError(`No expense id: ${id}`);
+  if (!expense) throw new NotFoundError(`No expense id: ${expense_id}`);
 
   return expense;
 }
 
 /** Find all expenses for a single user based on user id.
-    Returns [{ id, amount, date, vendor, description, category_id, transaction_id }, ...]
+    Returns [{ id, amount, date, vendor, description, category_id, category, transaction_id }, ...]
 */
 
-static async findAll({ user_id }) {
+static async findAll(user_id) {
   const result = await db.query(`
-    SELECT id, amount, date, vendor, description, category_id, transaction_id 
-    FROM expenses
+    SELECT e.id, amount, date, vendor, description, category_id, category, transaction_id 
+    FROM expenses e
+    JOIN categories c
+    ON e.category_id = c.id
     WHERE user_id = $1
     ORDER BY date`,
     [user_id]
@@ -42,11 +47,11 @@ static async findAll({ user_id }) {
 }
 
 /** Create an expense from data.
-    Data should be { amount, date, vendor, description, category_id, user_id, transaction_id } 
+    Data should be { amount, date, vendor, description, category_id, transaction_id } 
     Returns { id, amount, date, vendor, description, category_id, user_id, transaction_id } 
 */
 
-static async create({ amount, date, vendor, description=null, category_id=7, user_id, transaction_id=null }) {
+static async create(user_id, { amount, date, vendor, description=null, category_id=7, transaction_id=null }) {
   if (transaction_id) {
     const duplicateCheck = await db.query(`
       SELECT transaction_id 
@@ -77,39 +82,42 @@ static async create({ amount, date, vendor, description=null, category_id=7, use
     Throws NotFoundError if expense not found.
 */
 
-static async update(id, data) {
+static async update(user_id, expense_id, data) {
   const { setCols, values } = partialUpdateSql(
     data, 
     {});
     
-  const idPosition = "$" + (values.length+1);
+  const expIdPosition = "$" + (values.length+1);
+  const userIdPosition = "$" + (values.length+2);
 
   const sqlQuery = `
     UPDATE expenses 
     SET ${setCols} 
-    WHERE id = ${idPosition} 
+    WHERE id = ${expIdPosition} 
+    AND user_id = ${userIdPosition}
     RETURNING id, amount, date, vendor, description, category_id`;
 
-  const result = await db.query(sqlQuery, [...values, id]);
+  const result = await db.query(sqlQuery, [...values, expense_id, user_id]);
   const expense = result.rows[0];
 
-  if (!expense) throw new NotFoundError(`No expense id: ${id}`)
+  if (!expense) throw new NotFoundError(`No expense id: ${expense_id}`)
 
   return expense;
 }
 
 /** Delete given expense from database; returns undefined. */
 
-static async remove(id) {
+static async remove(user_id, expense_id) {
   let result = await db.query(`
     DELETE
     FROM expenses
     WHERE id = $1
+    AND user_id = $2
     RETURNING id`,
-    [id]
+    [expense_id, user_id]
   )
   const expense = result.rows[0];
-  if (!expense) throw new NotFoundError(`No expense id: ${id}`);
+  if (!expense) throw new NotFoundError(`No expense id: ${expense_id}`);
  }
 
 }

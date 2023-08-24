@@ -21,8 +21,8 @@ app.use(authenticateJWT);
 
 app.use("/auth", authRoutes);
 app.use("/users", usersRoutes);
-app.use("/expenses", expensesRoutes);
-app.use("/budgets", budgetsRoutes);
+app.use("/users/:userId/expenses", expensesRoutes);
+app.use("/users/:userId/budgets", budgetsRoutes);
 app.use("/accounts", accountsRoutes); //test
 app.use("/plaid", plaidRoutes);
 

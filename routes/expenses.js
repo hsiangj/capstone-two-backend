@@ -1,7 +1,7 @@
 /** Routes for expenses. */
 
 const express = require("express");
-const router = new express.Router();
+const router = express.Router({ mergeParams: true });
 const jsonschema = require("jsonschema");
 
 const Expense = require("../models/expense");
@@ -9,16 +9,15 @@ const expenseNewSchema = require("../schemas/expenseNew.json");
 const expenseUpdateSchema = require("../schemas/expenseUpdate.json");
 const { BadRequestError } = require("../expressErrors");
 
-/** GET /expenses/[id] => { expense }
- * Returns { id, amount, date, vendor, description, transaction }
- *   where budgets is { id, amount, category }
-      and expenses is { id, amount. date, vendor, description, category }
+/** GET /users/:userId/expenses/:expenseId => { expense }
+ * Returns { id, amount, date, vendor, description, category_id, category, user_id, transaction_id }
  * Authorization required: same user as logged in user
  */
 
-router.get("/:id", async function (req, res, next) {
+router.get("/:expenseId", async function (req, res, next) {
   try {
-    const expense = await Expense.get(req.params.id);
+    const { userId, expenseId } = req.params;
+    const expense = await Expense.get(userId, expenseId);
     return res.json({ expense });
 
   } catch (err) {
@@ -26,14 +25,15 @@ router.get("/:id", async function (req, res, next) {
   }
 })
 
-/** GET /expenses {user_id} => { expense: [{id, amount, date, vendor, description, category_id, transaction_id},...] }
+/** GET /users/:userId/expenses => { expenses } 
+ * Returns { expenses: [{id, amount, date, vendor, description, category_id, category, transaction_id},...] }
  *
  * Authorization required: same user as logged in user
  */
 
 router.get("/", async function (req, res, next) {
   try {
-    const expenses = await Expense.findAll(req.body);
+    const expenses = await Expense.findAll(req.params.userId);
     return res.json({ expenses });
 
   } catch (err) {
@@ -41,9 +41,9 @@ router.get("/", async function (req, res, next) {
   }
 })
 
-/** POST /expenses { expense } => { expense }
- * Expense should be: { amount, date, vendor, description, category_id, user_id, transaction_id } 
- * Both description and transaction are optional. 
+/** POST /users/:userId/expenses { expense } => { expense }
+ * Expense should be: { amount, date, vendor, description, category_id, transaction_id } 
+ * Vendor, description and transaction_id are optional. 
  * Returns { id, amount, date, vendor, description, category_id, user_id, transaction_id } 
  * Authorization required: same user as logged in user
  */
@@ -55,7 +55,8 @@ router.post("/", async function (req, res, next) {
       const errs = validator.errors.map(e => e.stack);
       throw new BadRequestError(errs);
     }
-    const expense = await Expense.create(req.body);
+    const { userId } = req.params;
+    const expense = await Expense.create(userId, req.body);
     return res.status(201).json({ expense });
 
   } catch (err) {
@@ -63,21 +64,21 @@ router.post("/", async function (req, res, next) {
   }
 })
 
-/** PATCH /expenses/[id] { expense } => { expense }
+/** PATCH /users/:userId/expenses/:expenseId { expense } => { expense }
  * Data can include: { amount, date, vendor, description, category_id  }
  * Returns { id, amount, date, vendor, description, category_id }
  * Authorization required: same user as logged in user
  */
 
-router.patch("/:id", async function (req, res, next) {
+router.patch("/:expenseId", async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, expenseUpdateSchema);
     if (!validator.valid) {
       const errs = validator.errors.map(e => e.stack);
       throw new BadRequestError(errs);
     }
-   
-    const expense = await Expense.update(req.params.id,req.body);
+    const { userId, expenseId } = req.params;
+    const expense = await Expense.update(userId, expenseId,req.body);
     return res.json({ expense })
 
   } catch(err) {
@@ -85,14 +86,15 @@ router.patch("/:id", async function (req, res, next) {
   }
 })
 
-/** DELETE /expenses/[id]  =>  { deleted: id }
+/** DELETE /users/:userId/expenses/:expenseId  =>  { deleted: id }
  * Authorization required: same user as logged in user
  */
 
-router.delete("/:id", async function (req, res, next) {
+router.delete("/:expenseId", async function (req, res, next) {
   try {
-    await Expense.remove(req.params.id);
-    return res.json({ deleted: req.params.id });
+    const { userId, expenseId } = req.params;
+    await Expense.remove(userId, expenseId);
+    return res.json({ deleted: expenseId });
     
   } catch (err) {
     return next(err);

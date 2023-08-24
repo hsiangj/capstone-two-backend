@@ -10,27 +10,45 @@ class Budget {
   Throws NotFoundError if budget not found.
 */
 
-static async get(id) {
+static async get(budget_id) {
   const result = await db.query(`
-    SELECT id, amount, category_id, user_id
-    FROM budgets
-    WHERE id = $1`,
-    [id])
+    SELECT b.id, amount, category_id, category, user_id
+    FROM budgets b
+    JOIN categories c
+    ON b.category_id = c.id
+    WHERE b.id = $1`,
+    [budget_id])
 
   const budget = result.rows[0];
+  if (!budget) throw new NotFoundError(`No budget id: ${budget_id}`);
+
   budget.amount = parseFloat(budget.amount);
 
-  if (!budget) throw new NotFoundError(`No budget id: ${id}`);
-  
   return budget;
 }
 
+/** Find all budgets for a single user based on user id.
+    Returns [{ id, amount, category_id }, ...]
+*/
+
+static async getAll(user_id) {
+  const result = await db.query(`
+    SELECT b.id, amount, category_id, category
+    FROM budgets b
+    JOIN categories c
+    ON b.category_id = c.id
+    WHERE user_id = $1`,
+    [user_id]);
+
+  return result.rows;
+}
+
 /** Create a budget from data.
-    Data should be { amount, category_id, user_id } 
+    Data should be { amount, category_id } 
     Returns { id, amount, category_id, user_id } 
 */
 
-static async create({ amount, category_id, user_id }) {
+static async create(user_id, { amount, category_id }) {
   const duplicateCheck = await db.query(`
     SELECT category_id, user_id
     FROM budgets
@@ -57,33 +75,36 @@ static async create({ amount, category_id, user_id }) {
     Throws NotFoundError if budget not found.
 */
 
-static async update(id, amount) {
+static async update(user_id, budget_id, amount) {
   const result = await db.query(`
     UPDATE budgets 
     SET amount = $1
     WHERE id = $2
+    AND user_id = $3
     RETURNING id, amount, category_id`,
-    [amount, id])
-
+    [amount, budget_id, user_id])
+  
   const budget = result.rows[0];
-  budget.amount = parseFloat(budget.amount);
-  if (!budget) throw new NotFoundError(`No budget id: ${id}`);
+  if (!budget) throw new NotFoundError(`No budget id: ${budget_id}`);
 
+  budget.amount = parseFloat(budget.amount);
+  
   return budget;
 }
 
 /** Delete given budget from database; returns undefined. */
 
-static async remove(id) {
+static async remove(user_id, budget_id) {
   let result = await db.query(`
     DELETE
     FROM budgets
     WHERE id = $1
+    AND user_id = $2
     RETURNING id`,
-    [id]
+    [budget_id, user_id]
   )
   const budget = result.rows[0];
-  if (!budget) throw new NotFoundError(`No budget id: ${id}`);
+  if (!budget) throw new NotFoundError(`No budget id: ${budget_id}`);
 }
 
 }
