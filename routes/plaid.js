@@ -2,23 +2,11 @@
 
 const express = require("express");
 const router = express.Router();
-const { Configuration, PlaidApi, PlaidEnvironments } = require("plaid");
+const { plaidClient } = require("../config");
 
 const Account = require("../models/account");
 const Expense = require("../models/expense");
 const { mapCategory } = require("../helpers/category");
-
-const configuration = new Configuration({
-  basePath: PlaidEnvironments.sandbox,
-  baseOptions: {
-    headers: {
-      'PLAID-CLIENT-ID': process.env.PLAID_CLIENT_ID,
-      'PLAID-SECRET': process.env.PLAID_SECRET,
-    },
-  },
-});
-
-const plaidClient = new PlaidApi(configuration);
 
 router.post('/create_link_token', async function (req, res, next) {
   // Get the client_user_id by searching for the current user
@@ -69,10 +57,11 @@ router.post('/exchange_public_token', async function (req, res, next
     }
 
     const account = await Account.create(accData);
-   
-    return res.json({ accessToken, public_token_exchange: 'complete' });
+
+    return res.json({accessToken, public_token_exchange: 'complete' });
   } catch (error) {
-    return res.status(500).send('Public Token Exchange Failed:', error)
+    return next(error);
+    // return res.status(500).send('Public Token Exchange Failed:', error)
   }
 });
 
