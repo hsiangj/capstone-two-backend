@@ -86,17 +86,17 @@ class User {
       Throws NotFoundError if user not found.
   */
 
-  static async get(id) {
+  static async get(user_id) {
     const userRes = await db.query(`
       SELECT id, username, first_name AS "firstName", last_name AS "lastName", email
       FROM users
       WHERE id = $1`,
-      [id]
+      [user_id]
     )
 
     const user = userRes.rows[0];
 
-    if (!user) throw new NotFoundError(`No user id: ${id}`);
+    if (!user) throw new NotFoundError(`No user id: ${user_id}`);
 
     const budgetRes = await db.query(`
       SELECT b.id, amount, c.id AS "category_id", category
@@ -104,7 +104,7 @@ class User {
       JOIN categories as c
       ON b.category_id = c.id 
       WHERE user_id = $1`,
-      [id])
+      [user_id])
 
     user.budgets = budgetRes.rows;
 
@@ -114,7 +114,7 @@ class User {
       JOIN categories as c
       ON e.category_id = c.id 
       WHERE user_id = $1`,
-      [id])
+      [user_id])
     
     user.expenses = expenseRes.rows;
     
@@ -129,14 +129,14 @@ class User {
       Throws NotFoundError if user not found, and UnauthorizedError if incorrect password is entered.
   */
 
-  static async update(id, password, data) {
+  static async update(user_id, password, data) {
     const isCorrectUser = await db.query(`
       SELECT id, password
       FROM users
       WHERE id = $1`,
-      [id]
+      [user_id]
     ) 
-    if(!isCorrectUser) throw new NotFoundError(`No user id: ${id}`);
+    if(!isCorrectUser) throw new NotFoundError(`No user id: ${user_id}`);
     
     const isCorrectPassword = await bcrypt.compare(password, isCorrectUser.rows[0].password)
     
@@ -156,7 +156,7 @@ class User {
         SET ${setCols} 
         WHERE id = ${idPosition} 
         RETURNING id, username, first_name AS "firstName", last_name AS "lastName", email`;
-      const result = await db.query(sqlQuery, [...values, id]);
+      const result = await db.query(sqlQuery, [...values, user_id]);
       const user = result.rows[0];
 
       return user;
@@ -165,16 +165,16 @@ class User {
   
   /** Delete given user from database; returns username. */
 
-  static async remove(id) {
+  static async remove(user_id) {
     let result = await db.query(`
       DELETE
       FROM users
       WHERE id = $1
       RETURNING username`,
-      [id]
+      [user_id]
     )
     const user = result.rows[0];
-    if (!user) throw new NotFoundError(`No user id: ${id}`);
+    if (!user) throw new NotFoundError(`No user id: ${user_id}`);
 
     return user.username;
    }

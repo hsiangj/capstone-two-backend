@@ -8,16 +8,16 @@ const User = require("../models/user");
 const userUpdateSchema = require("../schemas/userUpdate.json");
 const { BadRequestError } = require("../expressErrors");
 
-/** GET /users/[id] => { user }
+/** GET /users/:userId => { user }
  * Returns { username, firstName, lastName, email, budgets, expenses}
  *   where budgets is { id, amount, category }
       and expenses is { id, amount. date, vendor, description, category }
  * Authorization required: same user as logged in user
  */
 
-router.get("/:id", async function (req, res, next) {
+router.get("/:userId", async function (req, res, next) {
   try {
-    const user = await User.get(req.params.id);
+    const user = await User.get(req.params.userId);
     return res.json({ user });
 
   } catch(err) {
@@ -25,13 +25,13 @@ router.get("/:id", async function (req, res, next) {
   }
 })
 
-/** PATCH /users/[id] { user } => { user }
+/** PATCH /users/:userId { user } => { user }
  * Data can include: { username, firstName, lastName, email }
  * Returns { id, username, firstName, lastName, email }
  * Authorization required: same user as logged in user
  */
 
-router.patch("/:id", async function (req, res, next) {
+router.patch("/:userId", async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, userUpdateSchema);
     if (!validator.valid) {
@@ -40,7 +40,7 @@ router.patch("/:id", async function (req, res, next) {
     }
     const { password } = req.body;
     delete req.body.password;
-    const user = await User.update(req.params.id, password, req.body);
+    const user = await User.update(req.params.userId, password, req.body);
     return res.json({ user })
 
   } catch(err) {
@@ -48,13 +48,13 @@ router.patch("/:id", async function (req, res, next) {
   }
 })
 
-/** DELETE /users/[id]  =>  { deleted: username }
+/** DELETE /users/:userId  =>  { deleted: username }
  * Authorization required: same user as logged in user
  */
 
-router.delete("/:id", async function (req, res, next) {
+router.delete("/:userId", async function (req, res, next) {
   try {
-    const user = await User.remove(req.params.id);
+    const user = await User.remove(req.params.userId);
     return res.json({ deleted: user })
 
   } catch (err) {
