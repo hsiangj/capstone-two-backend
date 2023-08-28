@@ -9,9 +9,12 @@ const { UnauthorizedError } = require("../expressErrors");
 
 function authenticateJWT(req, res, next) {
   try {
-    const token = req.body._token;
-    const payload = jwt.verify(token, SECRET_KEY);
-    res.locals.user = payload;
+    const authHeader = req.headers && req.headers.authorization;
+    if (authHeader) {
+      const token = authHeader.replace(/^[Bb]earer /, "").trim();
+      const payload = jwt.verify(token, SECRET_KEY);
+      res.locals.user = payload;
+    }
     return next();
 
   } catch (err) {
@@ -24,8 +27,7 @@ function authenticateJWT(req, res, next) {
 function ensureCorrectUser(req, res, next) {
   try {
     const user = res.locals.user;
-
-    if (!(user && (user.id === req.params.userId))) throw new UnauthorizedError();
+    if (!(user && (user.id === +req.params.userId))) throw new UnauthorizedError();
     return next();
   } catch (err) {
     return next(err);
