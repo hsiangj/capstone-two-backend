@@ -8,15 +8,17 @@ const Budget = require("../models/budget");
 const budgetNewSchema = require("../schemas/budgetNew.json");
 const budgetUpdateSchema = require("../schemas/budgetUpdate.json");
 const { BadRequestError } = require("../expressErrors");
+const { ensureCorrectUser } = require('../middleware/auth');
 
 /** GET /users/:userId/budgets/:budgetId => { budget }
  * Returns { id, amount, category_id, category, user_id }
  * Authorization required: same user as user id
  */
 
-router.get("/:budgetId", async function (req, res, next) {
+router.get("/:budgetId", ensureCorrectUser, async function (req, res, next) {
   try {
-    const budget = await Budget.get(req.params.budgetId);
+    const { userId, budgetId } = req.params;
+    const budget = await Budget.get(userId, budgetId);
     return res.json({ budget });
     
   } catch (err) {
@@ -30,7 +32,7 @@ router.get("/:budgetId", async function (req, res, next) {
  * Authorization required: same user as logged in user
  */
 
-router.get("/", async function (req, res, next) {
+router.get("/", ensureCorrectUser, async function (req, res, next) {
   try {
     const budgets = await Budget.getAll(req.params.userId);
     return res.json({ budgets })
@@ -41,12 +43,12 @@ router.get("/", async function (req, res, next) {
 })
 
 /** POST /users/:userId/budgets { budget } => { budget }
- * Budget should be: { amount, category_id, user_id } 
+ * Budget should be: { amount, category_id } 
  * Returns { id, amount, category_id, user_id } 
  * Authorization required: same user as user id
  */
 
-router.post("/", async function (req, res, next) {
+router.post("/", ensureCorrectUser, async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, budgetNewSchema);
     if (!validator.valid) {
@@ -63,12 +65,12 @@ router.post("/", async function (req, res, next) {
 })
 
 /** PATCH /users/:userId/budgets/:budgetId { budget } => { budget }
- * Data can include: { amount, date, vendor, description, category_id  }
+ * Data can include: { amount }
  * Returns { id, amount, category_id }
  * Authorization required: same user as logged in user
  */
 
-router.patch("/:budgetId", async function (req, res, next) {
+router.patch("/:budgetId", ensureCorrectUser, async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, budgetUpdateSchema);
     if (!validator.valid) {
@@ -89,7 +91,7 @@ router.patch("/:budgetId", async function (req, res, next) {
  * Authorization required: same user as logged in user
  */
 
-router.delete("/:budgetId", async function (req, res, next) {
+router.delete("/:budgetId", ensureCorrectUser, async function (req, res, next) {
   try {
     const {userId, budgetId} = req.params;
     await Budget.remove(userId, budgetId);

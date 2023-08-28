@@ -10,14 +10,15 @@ class Budget {
   Throws NotFoundError if budget not found.
 */
 
-static async get(budget_id) {
+static async get(user_id, budget_id) {
   const result = await db.query(`
     SELECT b.id, amount, category_id, category, user_id
     FROM budgets b
     JOIN categories c
     ON b.category_id = c.id
-    WHERE b.id = $1`,
-    [budget_id])
+    WHERE b.id = $1
+    AND user_id = $2`,
+    [budget_id, user_id])
 
   const budget = result.rows[0];
   if (!budget) throw new NotFoundError(`No budget id: ${budget_id}`);
@@ -33,11 +34,11 @@ static async get(budget_id) {
 
 static async getAll(user_id) {
   const result = await db.query(`
-    SELECT b.id, amount, category_id, category
-    FROM budgets b
-    JOIN categories c
+    SELECT b.id AS budget_id, amount, category, c.id AS category_id
+    FROM categories c
+    LEFT JOIN budgets b
     ON b.category_id = c.id
-    WHERE user_id = $1`,
+    AND user_id = $1`,
     [user_id]);
 
   return result.rows;
@@ -61,7 +62,8 @@ static async create(user_id, { amount, category_id }) {
   const result = await db.query(`
     INSERT INTO budgets (amount, category_id, user_id)
     VALUES ($1, $2, $3)
-    RETURNING id, amount, category_id, user_id`,
+    RETURNING id AS budget_id, amount, category_id,
+    (SELECT category FROM categories WHERE id = $2)`,
     [amount, category_id, user_id])
   
   const budget = result.rows[0];
@@ -70,7 +72,7 @@ static async create(user_id, { amount, category_id }) {
   return budget;
 }
 
-/** Update budget amount for a specific category_id and user_id combo.
+/** Update budget amount for a specific budget_id.
     Returns { id, amount, category_id } 
     Throws NotFoundError if budget not found.
 */
@@ -81,7 +83,7 @@ static async update(user_id, budget_id, amount) {
     SET amount = $1
     WHERE id = $2
     AND user_id = $3
-    RETURNING id, amount, category_id`,
+    RETURNING id AS budget_id, amount, category_id`,
     [amount, budget_id, user_id])
   
   const budget = result.rows[0];
