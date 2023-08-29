@@ -8,13 +8,14 @@ const Expense = require("../models/expense");
 const expenseNewSchema = require("../schemas/expenseNew.json");
 const expenseUpdateSchema = require("../schemas/expenseUpdate.json");
 const { BadRequestError } = require("../expressErrors");
+const { ensureCorrectUser } = require('../middleware/auth');
 
 /** GET /users/:userId/expenses/:expenseId => { expense }
  * Returns { id, amount, date, vendor, description, category_id, category, user_id, transaction_id }
  * Authorization required: same user as logged in user
  */
 
-router.get("/:expenseId", async function (req, res, next) {
+router.get("/:expenseId", ensureCorrectUser, async function (req, res, next) {
   try {
     const { userId, expenseId } = req.params;
     const expense = await Expense.get(userId, expenseId);
@@ -31,7 +32,7 @@ router.get("/:expenseId", async function (req, res, next) {
  * Authorization required: same user as logged in user
  */
 
-router.get("/", async function (req, res, next) {
+router.get("/", ensureCorrectUser, async function (req, res, next) {
   try {
     const expenses = await Expense.findAll(req.params.userId);
     return res.json({ expenses });
@@ -48,7 +49,7 @@ router.get("/", async function (req, res, next) {
  * Authorization required: same user as logged in user
  */
 
-router.post("/", async function (req, res, next) {
+router.post("/", ensureCorrectUser, async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, expenseNewSchema);
     if (!validator.valid) {
@@ -70,7 +71,7 @@ router.post("/", async function (req, res, next) {
  * Authorization required: same user as logged in user
  */
 
-router.patch("/:expenseId", async function (req, res, next) {
+router.patch("/:expenseId", ensureCorrectUser, async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, expenseUpdateSchema);
     if (!validator.valid) {
@@ -90,7 +91,7 @@ router.patch("/:expenseId", async function (req, res, next) {
  * Authorization required: same user as logged in user
  */
 
-router.delete("/:expenseId", async function (req, res, next) {
+router.delete("/:expenseId", ensureCorrectUser, async function (req, res, next) {
   try {
     const { userId, expenseId } = req.params;
     await Expense.remove(userId, expenseId);

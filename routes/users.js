@@ -7,6 +7,7 @@ const jsonschema = require("jsonschema");
 const User = require("../models/user");
 const userUpdateSchema = require("../schemas/userUpdate.json");
 const { BadRequestError } = require("../expressErrors");
+const { ensureCorrectUser } = require('../middleware/auth');
 
 /** GET /users/:userId => { user }
  * Returns { username, firstName, lastName, email, budgets, expenses}
@@ -15,7 +16,7 @@ const { BadRequestError } = require("../expressErrors");
  * Authorization required: same user as logged in user
  */
 
-router.get("/:userId", async function (req, res, next) {
+router.get("/:userId", ensureCorrectUser, async function (req, res, next) {
   try {
     const user = await User.get(req.params.userId);
     return res.json({ user });
@@ -31,7 +32,7 @@ router.get("/:userId", async function (req, res, next) {
  * Authorization required: same user as logged in user
  */
 
-router.patch("/:userId", async function (req, res, next) {
+router.patch("/:userId", ensureCorrectUser, async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, userUpdateSchema);
     if (!validator.valid) {
@@ -52,7 +53,7 @@ router.patch("/:userId", async function (req, res, next) {
  * Authorization required: same user as logged in user
  */
 
-router.delete("/:userId", async function (req, res, next) {
+router.delete("/:userId", ensureCorrectUser, async function (req, res, next) {
   try {
     const user = await User.remove(req.params.userId);
     return res.json({ deleted: user })
