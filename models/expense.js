@@ -39,7 +39,7 @@ static async findAll(user_id) {
     JOIN categories c
     ON e.category_id = c.id
     WHERE user_id = $1
-    ORDER BY date`,
+    ORDER BY date DESC`,
     [user_id]
   );
 
@@ -66,7 +66,8 @@ static async create(user_id, { amount, date, vendor, description=null, category_
     INSERT INTO expenses
     (amount, date, vendor, description, category_id, user_id, transaction_id)
     VALUES ($1, $2, $3, $4, $5, $6, $7)
-    RETURNING id, amount, date, vendor, description, category_id, user_id, transaction_id`,
+    RETURNING id, amount, date, vendor, description, category_id,transaction_id, 
+    (SELECT category FROM categories WHERE id = $5)`,
     [amount, date, vendor, description, category_id, user_id, transaction_id]
   )
   const expense = result.rows[0];

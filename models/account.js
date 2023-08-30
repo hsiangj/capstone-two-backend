@@ -4,7 +4,23 @@ const { BadRequestError, NotFoundError } = require("../expressErrors");
 
 class Account {
 
-/** Create an account from Plaid data.
+/** Find all accounts for a single user based on user id.
+    Returns [{ id, amount, date, vendor, description, category_id, category, transaction_id }, ...]
+*/
+
+static async getAll(user_id) {
+  const result = await db.query(`
+    SELECT id, access_token, item_id, account_id, institution_name, account_type 
+    FROM accounts e
+    WHERE user_id = $1
+    ORDER BY institution_name`,
+    [user_id]
+  );
+
+  return result.rows;
+}
+
+/** Create an account from Plaid data. See plaid route.
     Data should be { userID, accessToken, itemID, accountID, institutionID, institutionName, accountType } 
     Returns { institution name } 
     Throws BadRequestError for duplicate account.

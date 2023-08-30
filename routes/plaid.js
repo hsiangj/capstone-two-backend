@@ -10,23 +10,24 @@ const { mapCategory } = require("../helpers/category");
 
 router.post('/create_link_token', async function (req, res, next) {
   // Get the client_user_id by searching for the current user
-  //// const user = await User.find();
-  //// const clientUserId = user.id;
+  const userId = String(res.locals.user.id);
   const plaidRequest = {
     user: {
       // This should correspond to a unique id for the current user.
-      client_user_id: 'user',
+      client_user_id: userId
     },
-    client_name: 'Plaid Test App',
+    client_name: 'Plaid App',
     products: ['auth', 'transactions'],
     language: 'en',
     redirect_uri: 'http://localhost:3000/',
     country_codes: ['US'],
   };
+  
   try {
     const createTokenResponse = await plaidClient.linkTokenCreate(plaidRequest);
     return res.json(createTokenResponse.data);
   } catch (err) {
+    console.error('create_link_token error')
     return next(err);
   }
 });
@@ -47,7 +48,7 @@ router.post('/exchange_public_token', async function (req, res, next
     const itemID = plaidResponse.data.item_id;
 
     const accData = {
-      user_id: 1,
+      user_id: res.locals.user.id,
       access_token: accessToken,
       item_id: itemID,
       account_id: accID,
@@ -58,7 +59,7 @@ router.post('/exchange_public_token', async function (req, res, next
 
     const account = await Account.create(accData);
 
-    return res.json({accessToken, public_token_exchange: 'complete' });
+    return res.json({ accessToken });
   } catch (error) {
     return next(error);
     // return res.status(500).send('Public Token Exchange Failed:', error)
@@ -75,8 +76,8 @@ router.post('/transactions/sync', async function (req, res, next) {
   };
   try {
     const transactionResult = await plaidClient.transactionsSync(request);
-    let newTransactions = transactionResult.data.added;
-    
+    let newTransactions = transactionResult.data.added || [];
+   
     if (newTransactions.length > 0) {
       for (let transaction of newTransactions) {
         let convertedId = mapCategory(transaction.personal_finance_category.primary);
@@ -87,14 +88,14 @@ router.post('/transactions/sync', async function (req, res, next) {
           vendor: transaction.merchant_name,
           description: transaction.name,
           category_id: convertedId,
-          user_id: 1,
+          user_id: res.locals.user.id,
           transaction_id: transaction.transaction_id
         };
       
         try {
-          await Expense.create(data);
+          await Expense.create(res.locals.user.id, data);
         } catch (err) {
-          console.debug('/transactions/sync await expense error at:', data)
+          console.debug('/transactions/sync await expense error at data:', data)
           return next(err);
         }
       }
