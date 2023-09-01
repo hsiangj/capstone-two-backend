@@ -9,7 +9,7 @@ const authRoutes = require("./routes/auth");
 const usersRoutes = require("./routes/users");
 const expensesRoutes = require("./routes/expenses");
 const budgetsRoutes = require("./routes/budgets");
-const accountsRoutes = require("./routes/accounts"); //test
+const accountsRoutes = require("./routes/accounts"); 
 const plaidRoutes = require("./routes/plaid");
 
 const app = express();
@@ -20,11 +20,12 @@ app.use(express.urlencoded({extended: true}));
 app.use(authenticateJWT);
 
 app.use("/auth", authRoutes);
+app.use("/plaid", plaidRoutes);
 app.use("/users", usersRoutes);
 app.use("/users/:userId/expenses", expensesRoutes);
 app.use("/users/:userId/budgets", budgetsRoutes);
-app.use("/accounts", accountsRoutes); //test
-app.use("/plaid", plaidRoutes);
+app.use("/users/:userId/accounts", accountsRoutes); 
+
 
 
 /** Handle 404 errors */
