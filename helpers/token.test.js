@@ -4,8 +4,8 @@ const process = require('process');
 
 process.env.JWT_SECRET_KEY = 'test_secret_key';
 
-describe("createToken", function () {
-  it("should generate token", function () {
+describe("createToken", () => {
+  it("should generate token", () => {
     const user = { id: 1, username: "testuser" }
     const token = createToken(user);
     const payload = jwt.verify(token, process.env.JWT_SECRET_KEY);
