@@ -10,7 +10,7 @@ const { mapCategory } = require("../helpers/category");
 
 router.post('/create_link_token', async function (req, res, next) {
   // Get the client_user_id by searching for the current user
-  const userId = String(res.locals.user.id);
+  const userId = String(res.locals.user.id) || null;
   const plaidRequest = {
     user: {
       // This should correspond to a unique id for the current user.
@@ -62,12 +62,12 @@ router.post('/exchange_public_token', async function (req, res, next
     return res.json({ accessToken });
   } catch (error) {
     return next(error);
-    // return res.status(500).send('Public Token Exchange Failed:', error)
   }
 });
 
 router.post('/transactions/sync', async function (req, res, next) {
   const access_token = req.body.access_token;
+  const account_id = req.body.accountId;
   const request = {
     access_token: access_token,
     options: {
@@ -89,7 +89,8 @@ router.post('/transactions/sync', async function (req, res, next) {
           description: transaction.name,
           category_id: convertedId,
           user_id: res.locals.user.id,
-          transaction_id: transaction.transaction_id
+          transaction_id: transaction.transaction_id,
+          account_id: account_id
         };
       
         try {

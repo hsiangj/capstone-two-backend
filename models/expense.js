@@ -51,7 +51,7 @@ static async findAll(user_id) {
     Returns { id, amount, date, vendor, description, category_id, user_id, transaction_id } 
 */
 
-static async create(user_id, { amount, date, vendor, description=null, category_id=7, transaction_id=null }) {
+static async create(user_id, { amount, date, vendor, description=null, category_id=7, transaction_id=null, account_id=null}) {
   if (transaction_id) {
     const duplicateCheck = await db.query(`
       SELECT transaction_id 
@@ -64,11 +64,11 @@ static async create(user_id, { amount, date, vendor, description=null, category_
   }
   const result = await db.query(`
     INSERT INTO expenses
-    (amount, date, vendor, description, category_id, user_id, transaction_id)
-    VALUES ($1, $2, $3, $4, $5, $6, $7)
+    (amount, date, vendor, description, category_id, user_id, transaction_id, account_id)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
     RETURNING id, amount, date, vendor, description, category_id,transaction_id, 
     (SELECT category FROM categories WHERE id = $5)`,
-    [amount, date, vendor, description, category_id, user_id, transaction_id]
+    [amount, date, vendor, description, category_id, user_id, transaction_id, account_id]
   )
   const expense = result.rows[0];
   expense.amount = parseFloat(expense.amount);

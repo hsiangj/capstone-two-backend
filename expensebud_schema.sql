@@ -22,7 +22,8 @@ CREATE TABLE expenses (
   transaction_id TEXT, 
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   category_id INTEGER REFERENCES categories ON DELETE SET NULL,
-  user_id INTEGER REFERENCES users ON DELETE CASCADE
+  user_id INTEGER REFERENCES users ON DELETE CASCADE,
+  account_id INTEGER REFERENCES accounts ON DELETE CASCADE
 );
 
 CREATE TABLE budgets (
