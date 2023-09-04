@@ -12,7 +12,7 @@ const { BadRequestError } = require("../expressErrors");
  * @returns {Object} {sqlSetCols, dataToUpdate}
  *
  * @example {firstName: 'Sam', age: 32} =>
- *   { setCols: '"first_name"=$1, "age"=$2',
+ *   { setCols: "first_name = $1, age = $2",
  *     values: ['Sam', 32] }
  */
 

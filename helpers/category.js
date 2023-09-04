@@ -1,6 +1,6 @@
 const { BadRequestError } = require("../expressErrors");
 
-/** Maps Plaid personal_finance_category to database category
+/** Maps Plaid personal_finance_category string to database category
  *  Returns category_id. */
 
 function mapCategory(plaidCategory) {
