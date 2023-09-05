@@ -33,7 +33,7 @@ static async create({ user_id, access_token, item_id, account_id, institution_id
     WHERE user_id = $1 
     AND account_id = $2`,
     [user_id, account_id])
-  
+
   if (duplicateCheck.rows[0]) throw new BadRequestError('Account already exists');
 
   const result = await db.query(`
