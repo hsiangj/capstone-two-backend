@@ -98,26 +98,6 @@ class User {
 
     if (!user) throw new NotFoundError(`No user id: ${user_id}`);
 
-    const budgetRes = await db.query(`
-      SELECT b.id, amount, c.id AS "category_id", category
-      FROM budgets AS b
-      JOIN categories as c
-      ON b.category_id = c.id 
-      WHERE user_id = $1`,
-      [user_id])
-
-    user.budgets = budgetRes.rows;
-
-    const expenseRes = await db.query(`
-      SELECT e.id, amount, date, vendor, description, c.id AS "category_id", category
-      FROM expenses AS e
-      JOIN categories as c
-      ON e.category_id = c.id 
-      WHERE user_id = $1`,
-      [user_id])
-    
-    user.expenses = expenseRes.rows;
-    
     return user;
   } 
 
@@ -136,7 +116,7 @@ class User {
       WHERE id = $1`,
       [user_id]
     ) 
-    if(!isCorrectUser) throw new NotFoundError(`No user id: ${user_id}`);
+    if(isCorrectUser.rows.length === 0) throw new NotFoundError(`No user id: ${user_id}`);
     
     const isCorrectPassword = await bcrypt.compare(password, isCorrectUser.rows[0].password)
     
