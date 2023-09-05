@@ -19,7 +19,7 @@ static async get(user_id, expense_id) {
     ON e.category_id = c.id
     WHERE e.id = $1
     AND user_id = $2`,
-    [user_id, expense_id])
+    [expense_id, user_id])
 
   const expense = result.rows[0];
 
@@ -42,12 +42,12 @@ static async findAll(user_id) {
     ORDER BY date DESC`,
     [user_id]
   );
-
+  
   return result.rows;
 }
 
 /** Create an expense from data.
-    Data should be { amount, date, vendor, description, category_id, transaction_id } 
+    Data should be { amount, date, vendor, description, category_id, transaction_id } with amount, date and vendor being required.
     Returns { id, amount, date, vendor, description, category_id, user_id, transaction_id } 
 */
 
