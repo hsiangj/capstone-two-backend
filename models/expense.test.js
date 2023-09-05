@@ -156,7 +156,7 @@ describe("remove", () => {
 
   test("NotFoundError if expense not found", async () => {
     try {
-      await Expense.remove(1234);
+      await Expense.remove(userIds[0], 1234);
       fail();
     } catch (err) {
       expect(err instanceof NotFoundError).toBeTruthy();

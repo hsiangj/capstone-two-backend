@@ -6,6 +6,7 @@ const BCRYPT_WORK_FACTOR = 1;
 
 const userIds = [];
 const expenseIds = [];
+const budgetIds = [];
 
 async function commonBeforeAll() {
   await db.query("DELETE FROM users");
@@ -35,8 +36,16 @@ async function commonBeforeAll() {
         VALUES ($1, 100, '08/01/2023', 'testVendor', 1),
               ($1, 200, '08/02/2023', 'testVendor2', 2)
         RETURNING id`, [userIds[0]]);
-  expenseIds.splice(0, 0, ...expenseResult.rows.map(e => e.id));    
-      
+  expenseIds.splice(0, 0, ...expenseResult.rows.map(e => e.id));   
+  
+  const budgetResult = await db.query(`
+        INSERT INTO budgets(user_id, 
+                            amount,
+                            category_id)
+        VALUES ($1, 500, 1),
+              ($1, 1000, 2)
+        RETURNING id`, [userIds[0]]);
+  budgetIds.splice(0, 0, ...budgetResult.rows.map(e => e.id));   
 }
 
 async function commonBeforeEach() {
@@ -58,5 +67,6 @@ module.exports = {
   commonAfterEach,
   commonAfterAll,
   userIds,
-  expenseIds
+  expenseIds,
+  budgetIds
 };
