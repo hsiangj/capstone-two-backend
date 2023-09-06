@@ -47,7 +47,7 @@ static async findAll(user_id) {
 }
 
 /** Create an expense from data.
-    Data should be { amount, date, vendor, description, category_id, transaction_id } with amount, date and vendor being required.
+    Data should be { amount, date, vendor, description, category_id, transaction_id } with amount, date, category_id and vendor being required.
     Returns { id, amount, date, vendor, description, category_id, user_id, transaction_id } 
 */
 

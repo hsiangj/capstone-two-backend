@@ -2,10 +2,12 @@ require('dotenv').config();
 process.env.NODE_ENV = 'test';
 const db = require("../db");
 const User = require("../models/user");
+const Expense = require("../models/expense");
 const { createToken } = require("../helpers/token");
 
 const userIds = [];
 const userTokens = [];
+const expenseIds = [];
 
 async function commonBeforeAll() {
   await db.query("DELETE FROM users");
@@ -33,6 +35,23 @@ async function commonBeforeAll() {
   
   userIds[1] = user2Result.id;
   userTokens[1] = createToken({ username: "u2", id: userIds[1] });
+
+  const expense1Result = await Expense.create(userIds[0], {
+    amount: 100,
+    date: '08/01/2023',
+    vendor: 'testVendor',
+    category_id: 1,
+    transaction_id: 'abc'
+  });
+  const expense2Result = await Expense.create(userIds[0], {
+    amount: 200,
+    date: '08/02/2023',
+    vendor: 'testVendor2',
+    category_id: 2
+  });
+  expenseIds[0] = expense1Result.id;
+  expenseIds[1] = expense2Result.id;
+
 }
 
 async function commonBeforeEach() {
@@ -55,5 +74,6 @@ module.exports = {
   commonAfterEach,
   commonAfterAll,
   userIds,
-  userTokens
+  userTokens,
+  expenseIds
 };

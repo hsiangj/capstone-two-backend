@@ -85,7 +85,7 @@ describe("PATCH /users/:userId", () => {
     expect(resp.statusCode).toEqual(401);
   });
 
-  test("401 Unauthorized if wrong token", async () => {
+  test("401 Unauthorized if incorrect user/token", async () => {
     const resp = await request(app)
       .patch(`/users/${userIds[0]}`)
       .set("Authorization", `Bearer ${userTokens[1]}`)
@@ -120,7 +120,7 @@ describe("DELETE /users/:userId", () => {
       { deleted: "u1" });
   });
 
-  test("401 Unauthorized if wrong token", async () => {
+  test("401 Unauthorized if incorrect user/token", async () => {
     const resp = await request(app)
       .patch(`/users/${userIds[0]}`)
       .set("Authorization", `Bearer ${userTokens[1]}`);
