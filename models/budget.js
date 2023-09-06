@@ -5,7 +5,7 @@ const { NotFoundError, BadRequestError } = require("../expressErrors");
 class Budget {
 
 /** Given budget id, return data about budget.
-  Returns { id, amount, category_id, user_id } 
+  Returns { id, amount, category_id, category, user_id } 
 
   Throws NotFoundError if budget not found.
 */
@@ -29,7 +29,7 @@ static async get(user_id, budget_id) {
 }
 
 /** Find all budgets for a single user based on user id.
-    Returns [{ id, amount, category_id }, ...]
+    Returns [{ budget_id, amount, category_id }, ...]
 */
 
 static async getAll(user_id) {
@@ -46,7 +46,7 @@ static async getAll(user_id) {
 
 /** Create a budget from data.
     Data should be { amount, category_id } 
-    Returns { id, amount, category_id, user_id } 
+    Returns { budget_id, amount, category_id, user_id } 
 */
 
 static async create(user_id, { amount, category_id }) {
@@ -73,7 +73,7 @@ static async create(user_id, { amount, category_id }) {
 }
 
 /** Update budget amount for a specific budget_id.
-    Returns { id, amount, category_id } 
+    Returns { budget_id, amount, category_id } 
     Throws NotFoundError if budget not found.
 */
 

@@ -27,7 +27,7 @@ router.get("/:budgetId", ensureCorrectUser, async function (req, res, next) {
 })
 
 /** GET /users/:userId/budgets => { budgets } 
- * Returns { budgets: [{id, amount, category_id, category },...] }
+ * Returns { budgets: [{ budget_id, amount, category_id, category },...] }
  *
  * Authorization required: same user as logged in user
  */
@@ -44,7 +44,7 @@ router.get("/", ensureCorrectUser, async function (req, res, next) {
 
 /** POST /users/:userId/budgets { budget } => { budget }
  * Budget should be: { amount, category_id } 
- * Returns { id, amount, category_id, user_id } 
+ * Returns { budget_id, amount, category_id, user_id } 
  * Authorization required: same user as user id
  */
 
@@ -66,7 +66,7 @@ router.post("/", ensureCorrectUser, async function (req, res, next) {
 
 /** PATCH /users/:userId/budgets/:budgetId { budget } => { budget }
  * Data can include: { amount }
- * Returns { id, amount, category_id }
+ * Returns { budget_id, amount, category_id }
  * Authorization required: same user as logged in user
  */
 
@@ -87,7 +87,7 @@ router.patch("/:budgetId", ensureCorrectUser, async function (req, res, next) {
   }
 })
 
-/** DELETE /budgets/:budgetId  =>  { deleted: budgetId }
+/** DELETE /users/:userId/budgets/:budgetId  =>  { deleted: budgetId }
  * Authorization required: same user as logged in user
  */
 

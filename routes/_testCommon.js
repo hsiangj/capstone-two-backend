@@ -3,11 +3,13 @@ process.env.NODE_ENV = 'test';
 const db = require("../db");
 const User = require("../models/user");
 const Expense = require("../models/expense");
+const Budget = require("../models/budget");
 const { createToken } = require("../helpers/token");
 
 const userIds = [];
 const userTokens = [];
 const expenseIds = [];
+const budgetIds = [];
 
 async function commonBeforeAll() {
   await db.query("DELETE FROM users");
@@ -52,6 +54,16 @@ async function commonBeforeAll() {
   expenseIds[0] = expense1Result.id;
   expenseIds[1] = expense2Result.id;
 
+  const budget1Result = await Budget.create(userIds[0], {
+    amount: 500,
+    category_id: 1
+  });
+  const budget2Result = await Budget.create(userIds[0], {
+    amount: 1000,
+    category_id: 2
+  });
+  budgetIds[0] = budget1Result.budget_id; 
+  budgetIds[1] = budget2Result.budget_id;
 }
 
 async function commonBeforeEach() {
@@ -75,5 +87,6 @@ module.exports = {
   commonAfterAll,
   userIds,
   userTokens,
-  expenseIds
+  expenseIds,
+  budgetIds
 };
