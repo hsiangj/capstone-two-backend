@@ -13,18 +13,6 @@ CREATE TABLE categories (
   category VARCHAR(30) UNIQUE NOT NULL
 );
 
-CREATE TABLE expenses (
-  id SERIAL PRIMARY KEY,
-  amount NUMERIC(10, 2) NOT NULL,
-  date DATE NOT NULL,
-  vendor TEXT,
-  description TEXT,
-  transaction_id TEXT, 
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  category_id INTEGER REFERENCES categories ON DELETE SET NULL,
-  user_id INTEGER REFERENCES users ON DELETE CASCADE,
-  account_id INTEGER REFERENCES accounts ON DELETE CASCADE
-);
 
 CREATE TABLE budgets (
   id SERIAL PRIMARY KEY,
@@ -45,6 +33,18 @@ CREATE TABLE accounts (
   account_type TEXT
 );
 
+CREATE TABLE expenses (
+  id SERIAL PRIMARY KEY,
+  amount NUMERIC(10, 2) NOT NULL,
+  date DATE NOT NULL,
+  vendor TEXT,
+  description TEXT,
+  transaction_id TEXT, 
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  category_id INTEGER REFERENCES categories ON DELETE SET NULL,
+  user_id INTEGER REFERENCES users ON DELETE CASCADE,
+  account_id INTEGER REFERENCES accounts ON DELETE CASCADE
+);
 
 
 
