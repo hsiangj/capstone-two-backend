@@ -5,7 +5,7 @@ const { BadRequestError, NotFoundError } = require("../expressErrors");
 class Account {
 
 /** Find all accounts for a single user based on user id.
-    Returns [{ id, amount, date, vendor, description, category_id, category, transaction_id }, ...]
+    Returns [{ id, access_token, item_id, account_id, institution_name, account)type }, ...]
 */
 
 static async getAll(user_id) {

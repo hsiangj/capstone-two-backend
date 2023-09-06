@@ -4,12 +4,14 @@ const db = require("../db");
 const User = require("../models/user");
 const Expense = require("../models/expense");
 const Budget = require("../models/budget");
+const Account = require("../models/account");
 const { createToken } = require("../helpers/token");
 
 const userIds = [];
 const userTokens = [];
 const expenseIds = [];
 const budgetIds = [];
+const accountIds = [];
 
 async function commonBeforeAll() {
   await db.query("DELETE FROM users");
@@ -64,6 +66,28 @@ async function commonBeforeAll() {
   });
   budgetIds[0] = budget1Result.budget_id; 
   budgetIds[1] = budget2Result.budget_id;
+
+  const account1Result = await Account.create({
+    user_id: userIds[0],
+    access_token: "accToken1",
+    item_id: "item1",
+    account_id: "account1",
+    institution_id: "abc",
+    institution_name: "abc bank",
+    account_type: "abc checking"
+  });
+  const account2Result = await Account.create({
+    user_id: userIds[0],
+    access_token: "accToken2",
+    item_id: "item2",
+    account_id: "account2",
+    institution_id: "xyz",
+    institution_name: "xyz bank",
+    account_type: "xyz checking"
+  });
+
+  accountIds[0]= account1Result.id;
+  accountIds[1]= account2Result.id;
 }
 
 async function commonBeforeEach() {
@@ -88,5 +112,6 @@ module.exports = {
   userIds,
   userTokens,
   expenseIds,
-  budgetIds
+  budgetIds,
+  accountIds
 };
