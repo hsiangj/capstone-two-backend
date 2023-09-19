@@ -48,7 +48,7 @@ Endpoint for creating a new user.
 		    lastName: string,
 		    email: string
 	    },
-	    token: string  
+	token: string  
     }
 ```
 
@@ -113,18 +113,18 @@ Endpoint for getting all expenses for a user. **Correct User Required.**
 - Response: 
 ```
 {
-	expenses: [
-		{
-			id: number,
-			amount: string,
-			date: string,
-			vendor: string,
-			description: string,
-			category_id: number,
-			category: string,
-			transaction_id: string
-		}, ...
-	]
+    expenses: [
+	{
+		id: number,
+		amount: string,
+		date: string,
+		vendor: string,
+		description: string,
+		category_id: number,
+		category: string,
+		transaction_id: string
+	}, ...
+    ]
 }
 ```
 
@@ -133,17 +133,17 @@ Endpoint for getting a single expense for a user. **Correct User Required.**
 - Response: 
 ```
 {
-	expense: {
+    expense: {  
         id: number,
-        amount: string,
-        date: string,
-        vendor: string,
-        description: string,
-        category_id: number,
-        category: string,
-        user_id: number,
-        transaction_id: string
-	}
+	amount: string,
+	date: string,
+	vendor: string,
+	description: string,
+	category_id: number,
+	category: string,
+	user_id: number,
+	transaction_id: string
+    }   
 }
 ```
 
@@ -159,7 +159,7 @@ Endpoint for creating an expense for a user. **Correct User Required.**
 - Response: 
 ```
 {
-	expense: {
+    expense: {  
         id: number,
         amount: number,
         date: string,
@@ -168,7 +168,7 @@ Endpoint for creating an expense for a user. **Correct User Required.**
         category_id: number,
         category: string,
         transaction_id: string
-	}
+    }   
 }
 ```
 
@@ -183,14 +183,14 @@ Endpoint for editing an expense for a user. **Correct User Required.**
 - Response: 
 ```
 {
-	expense: {
+    expense: {  
         id: number,
         amount: string,
         date: string,
         vendor: string,
         description: string,
         category_id: number
-	}
+    }   
 }
 ```
 
@@ -204,14 +204,14 @@ Endpoint for getting all budgets for a user. **Correct User Required.**
 - Response: 
 ```
 {
-	budgets: [
-		{
-			budget_id: number,
-			amount: string,
-            category: string,
-			category_id: number			
-		}, ...
-	]
+    budgets: [
+	{
+		budget_id: number,
+		amount: string,
+		category: string,
+		category_id: number
+	}, ...
+    ]
 }
 ```
 
@@ -220,13 +220,13 @@ Endpoint for getting a single budget for a user. **Correct User Required.**
 - Response: 
 ```
 {
-	budget: {
+    budget: {  
         id: number,
-        amount: number,
-        category: string,
-        category_id: number,
-        user_id: number			
-	}
+	amount: number,
+	category: string,
+	category_id: number,
+	user_id: number	
+    }   
 }
 ```
 
@@ -238,12 +238,12 @@ Endpoint for creating a budget for a user. **Correct User Required.**
 - Response: 
 ```
 {
-	budget: {
+    budget: {  
         budget_id: number,
         amount: number,
         category: string,
         category_id: number
-	}
+    }   
 }
 ```
 
@@ -254,11 +254,11 @@ Endpoint for editing a budget for a user. **Correct User Required.**
 - Response: 
 ```
 {
-	budget: {
+    budget: {  
         budget_id: number,
         amount: number,
         category_id: number
-	}
+    }   
 }
 ```
 
@@ -273,16 +273,16 @@ Endpoint for getting all accounts for a user. **Correct User Required.**
 - Response: 
 ```
 {
-	accounts: [
-		{
-			id: number,
-			access_token: string,
-            item_id: string,
-			account_id: string,
-            institution_name: string,
-            account_type: string			
-		}, ...
-	]
+    accounts: [
+	{
+		id: number,
+		access_token: string,
+		item_id: string,
+		account_id: string,
+		institution_name: string,
+		account_type: string
+	}, ...
+    ]
 }
 ```
 
