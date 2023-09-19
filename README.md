@@ -32,39 +32,75 @@ Base URL: `https://expensebud-backend.onrender.com`
 **POST** `/auth/register`   
 Endpoint for creating a new user. 
 - Request:
-    - username
-    - password
-    - firstName
-    - lastName
-    - email
+    - username: string
+    - password: string
+    - firstName: string
+    - lastName: string
+    - email: string
 
 - Response: 
-`{ user, token }`
+```
+    {    
+        user: {  
+		    id: number,
+		    username: string,
+		    firstName: string,
+		    lastName: string,
+		    email: string
+	    },
+	    token: string  
+    }
+```
 
 **POST** `/auth/login`  
 Endpoint for authenticating existing user. 
 - Request:
-    - username
-    - password
+    - username: string
+    - password: string
 - Response: 
-`{ token }`
+```
+{
+    token: string
+}
+```
 
 ---
 #### USERS ROUTES
 **GET** `/users/:userId`   
 Endpoint for getting a user. **Correct User Required.**  
 - Response: 
-`{ username, firstName, lastName, email, password }`
+```
+{    
+    user: {  
+        id: number,
+        username: string,
+        firstName: string,
+        lastName: string,
+        email: string
+    }   
+}
+```
 
 **PATCH** `/users/:userId`   
 Endpoint for editing a user. **Correct User Required.**  
 - Request:  
-    - username (optional)
-    - firstName (optional)
-    - lastName (optional)
-    - email (optional)
-    - password
-- Response: `{ id, username, firstName, lastName, email }`
+    - username (optional): string
+    - firstName (optional): string
+    - lastName (optional): string
+    - email (optional): string
+    - password: string
+- Response: 
+```
+{    
+    user: {  
+        id: number,
+        username: string,
+        firstName: string,
+        lastName: string,
+        email: string
+    }   
+}
+```
 
 **DELETE** `/users/:userId`   
 Endpoint for removing a user. **Correct User Required.**  
@@ -74,32 +110,89 @@ Endpoint for removing a user. **Correct User Required.**
 #### EXPENSES ROUTES
 **GET** `/users/:userId/expenses`   
 Endpoint for getting all expenses for a user. **Correct User Required.**  
-- Response: `{ expenses: [{id, amount, date, vendor, description, category_id, category, transaction_id},...] }`
+- Response: 
+```
+{
+	expenses: [
+		{
+			id: number,
+			amount: string,
+			date: string,
+			vendor: string,
+			description: string,
+			category_id: number,
+			category: string,
+			transaction_id: string
+		}, ...
+	]
+}
+```
 
 **GET** `/users/:userId/expenses/:expenseId`   
 Endpoint for getting a single expense for a user. **Correct User Required.**  
-- Response: `{ id, amount, date, vendor, description, category_id, category, user_id, transaction_id }`
+- Response: 
+```
+{
+	expense: {
+        id: number,
+        amount: string,
+        date: string,
+        vendor: string,
+        description: string,
+        category_id: number,
+        category: string,
+        user_id: number,
+        transaction_id: string
+	}
+}
+```
 
 **POST** `/users/:userId/expenses`  
 Endpoint for creating an expense for a user. **Correct User Required.**     
 - Request:  
-    - amount
-    - date 
-    - vendor (optional)
-    - description (optional)
-    - category_id
-    - transaction_id (optional)
-- Response: `{ id, amount, date, vendor, description, category_id, user_id, transaction_id } `
+    - amount: number
+    - date: string
+    - vendor (optional): string
+    - description (optional): string
+    - category_id: number
+    - transaction_id (optional): string
+- Response: 
+```
+{
+	expense: {
+        id: number,
+        amount: number,
+        date: string,
+        vendor: string,
+        description: string,
+        category_id: number,
+        category: string,
+        transaction_id: string
+	}
+}
+```
 
 **PATCH** `/users/:userId/expenses/:expenseId`   
 Endpoint for editing an expense for a user. **Correct User Required.**     
 - Request:  
-    - amount (optional)
-    - date (optional)
-    - vendor (optional)
-    - description (optional)
-    - category_id (optional)
-- Response: `{ id, amount, date, vendor, description, category_id }`
+    - amount (optional): number
+    - date (optional): string
+    - vendor (optional): string
+    - description (optional): string
+    - category_id (optional): number
+- Response: 
+```
+{
+	expense: {
+        id: number,
+        amount: string,
+        date: string,
+        vendor: string,
+        description: string,
+        category_id: number
+	}
+}
+```
 
 **DELETE** `/users/:userId/expenses/:expenseId`   
 Endpoint for removing an expense for a user. **Correct User Required.**     
@@ -108,24 +201,66 @@ Endpoint for removing an expense for a user. **Correct User Required.**
 #### BUDGETS ROUTES
 **GET** `/users/:userId/budgets`   
 Endpoint for getting all budgets for a user. **Correct User Required.**  
-- Response: `{ budgets: [{ budget_id, amount, category_id, category },...] }`
+- Response: 
+```
+{
+	budgets: [
+		{
+			budget_id: number,
+			amount: string,
+            category: string,
+			category_id: number			
+		}, ...
+	]
+}
+```
 
 **GET** `/users/:userId/budgets/:budgetId`   
 Endpoint for getting a single budget for a user. **Correct User Required.**  
-- Response: `{ id, amount, category_id, category, user_id }`
+- Response: 
+```
+{
+	budget: {
+        id: number,
+        amount: number,
+        category: string,
+        category_id: number,
+        user_id: number			
+	}
+}
+```
 
 **POST** `/users/:userId/budgets`  
 Endpoint for creating a budget for a user. **Correct User Required.**     
 - Request:  
-    - amount
-    - category_id
-- Response: `{ budget_id, amount, category_id, user_id }  `
+    - amount: number
+    - category_id: number
+- Response: 
+```
+{
+	budget: {
+        budget_id: number,
+        amount: number,
+        category: string,
+        category_id: number
+	}
+}
+```
 
 **PATCH** `/users/:userId/budgets/:budgetId`   
 Endpoint for editing a budget for a user. **Correct User Required.**     
 - Request:  
-    - amount 
-- Response: `{ budget_id, amount, category_id }`
+    - amount: number
+- Response: 
+```
+{
+	budget: {
+        budget_id: number,
+        amount: number,
+        category_id: number
+	}
+}
+```
 
 **DELETE** `/users/:userId/budgets/:budgetId`   
 Endpoint for removing a budget for a user. **Correct User Required.**     
@@ -135,7 +270,21 @@ Endpoint for removing a budget for a user. **Correct User Required.**
 #### ACCOUNTS ROUTES
 **GET** `/users/:userId/accounts`   
 Endpoint for getting all accounts for a user. **Correct User Required.**  
-- Response: `{ accounts: [{ id, access_token, item_id, account_id, institution_name, account)type }, ...] }`
+- Response: 
+```
+{
+	accounts: [
+		{
+			id: number,
+			access_token: string,
+            item_id: string,
+			account_id: string,
+            institution_name: string,
+            account_type: string			
+		}, ...
+	]
+}
+```
 
 **DELETE** `/users/:userId/accounts/:accountId`   
 Endpoint for removing a budget for a user. **Correct User Required.**     
