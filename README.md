@@ -7,9 +7,9 @@ This repository is completed as part of Springboard Software Engineering Career 
 
 View the application [here](https://expensebud.onrender.com/ "ExpenseBud") on Render. Best viewed on desktop. 
 
-Demo credentials:
-Username: testuser
-Password: testuser
+Demo credentials:  
+Username: testuser  
+Password: testuser  
 
 Please note that the backend server may take a moment to load.
 
